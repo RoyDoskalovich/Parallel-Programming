@@ -1,0 +1,3 @@
+C:/parallelPorg/ex2/cmake-build-debug/CMakeFiles/ex2.dir
+C:/parallelPorg/ex2/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/parallelPorg/ex2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
