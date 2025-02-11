@@ -1,0 +1,113 @@
+Shared and Private variables:
+
+We mean private to each thread.
+
+Example:
+
+int a = 0;
+int main() {
+	int b = 1;
+	#pragma omp parallel
+	{
+		static int c = 2;
+		int d = 3;
+		//
+	}
+	return 0;
+}
+
+shared variables = {a, b, c}.
+private variables = {d}.
+
+we can change the "faith" of a variable:
+	#pragma omp parallel for private(j)
+
+	#pragma omp parallel for shared(love)
+
+Example:
+
+#define N 1000
+void main() {
+	
+	int i, j;
+	static double A[N][N] = {0}, B[N][N] = {0}, C[N][N] - {0};
+	
+	#pragma omp parallel for private(j)
+	for (i = 0; i < N; i++)
+		for (j = 0; j < N; j++)
+			C[i][j] = A[i][j] + B[i][j]; 
+}
+
+The variable i would automatically turn to be private variable because of the fact that the outer loops has been parallelized,
+but the inner loop has not, and therefor j would not automatically would turn private,
+but only because of the private(j) statement we wrote.
+
+Note that the private statement creates a local variable for each thread, and even if this variable has been declared before that does not guarantee that the private variable would have the same value,
+and also every change that the code would have on the private variable would not effect the global variable,
+but if we want it to there is a way:
+
+Examples:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+int sum = 1;
+#pragma omp parallel for
+for (...) {
+	printf("sum = %d", sum);		# "sum = 0" would be printed!
+	//
+}
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+int sum = 1;
+#pragma omp parallel for firstprivate(sum)
+for (...) {
+	printf("sum = %d", sum);		# "sum = 1" would be printed!
+	//
+}
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+int sum = 1;
+#pragma omp parallel for private(sum)
+for (int i = 0; i < 10; i++) {
+	sum = i;
+}
+printf("sum = %d", sum);		# "sum = 1" would be printed!
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+int sum = 1;
+#pragma omp parallel for lastprivate(sum)
+for (int i = 0; i < 10; i++) {
+	sum = i;
+}
+printf("sum = %d", sum);		# "sum = 9" would be printed!
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+int sum = 1;
+#pragma omp parallel for firstprivate(sum) lastprivate(sum)
+for (int i = 0; i < 10; i++) {
+	sum += i;
+}
+printf("sum = %d", sum);
+
+What would happen?
+
+First, all of the private sums would be initialized with the value of 1.
+The outer printf would print the last value the last running thread had,
+meaning that if the last thread had the last two iterations it would print
+"sum = 17" (8 + 9), if only the last iteration it would print "sum = 9"... 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+Good habit is to add the default(none) statement to force ourselves to declare the privacy of the variables in our code.
+
+Error raised example:
+int x = 0, y =1;
+# pragma omp parallel for default(none)
+for (...) {
+	x += 1;
+	y += 2;
+}
+
+How to fix it:
+int x = 0, y =1;
+# pragma omp parallel for default(none) private(x, y)
+for (...) {
+	x += 1;
+	y += 2;
+}

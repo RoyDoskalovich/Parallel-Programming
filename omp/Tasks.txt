@@ -1,0 +1,64 @@
+Tasks:
+
+A tool that works similarly to thread pool, there is a task queue that tasks being added to, those tasks are assigned to threads according to the first come first serve principle.
+This tool is very useful when we don't know how many tasks would be needed to be executed (think about while loop that you don't know how iterations it would take,
+and you wish to parallelize each iteration).
+
+Syntax:
+
+#pragma omp parallel
+{
+	#pragma omp single	# Note that we use single in order that only one thread would add the tasks to the task queue, so we would not have duplications.
+	{
+		#pragma omp task
+			task1();
+		#pragma omp task
+			task2();
+		#pragma omp task
+			task3();
+	}
+}
+
+taskwait: If we want to set an explicit barrier for some reason
+
+Example:
+
+int main() {
+	
+	int a = 1; b = 1; c, d;
+
+	#pragma omp parallel
+	{
+		#pragma omp single
+		{
+			#pragma omp task
+				a = 1 + 2 + 3;
+			#pragma omp task
+				b = 4 + 5 + 6;
+
+			#pragma omp taskwait
+
+			#pragma omp task
+				printf("a + b = %d\n", a + b);
+			#pragma omp task
+				printf("a * b = %d\n", a * b);		
+		}
+	}
+}
+
+Linked list example: we want to have some process done on each node of the linked list, and we want it to happen parallelly.
+
+LinkedList L = LinkedList;
+
+#pragma omp parallel
+{
+	#pragma omp single
+	{
+		Node *p = L.getHead(); 		// Pun intended?
+		while (p) {
+			#pragme omp task firstprivate(p)
+				process(p);
+		}
+		p = p->next;
+	}
+}

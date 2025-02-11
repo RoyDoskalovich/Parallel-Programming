@@ -1,0 +1,26 @@
+int ompSumArray(int *arr, int size) {
+	
+	int threadNum;
+	int partialSums[N][CACHE_LINE_SIZE / sizeof(int)] = {0};		// Padding to avoid false sharing!
+	
+	omp_set_num_threads(N);
+	
+	#pragma omp parallel
+	{
+		#pragma omp single
+			threadNum = omp_get_num_threads();
+		
+		int id = omp_get_thread_num();
+		
+		for (int i = id; i < size; i += threadNum) {
+			partialSums[id][0] += arr[i];
+		}
+	}
+
+	int result = 0;
+	for (int i = 0; i < threadNum; i++) {
+		result += partialSums[i][0];
+	}
+	
+	return result;
+}

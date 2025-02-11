@@ -1,0 +1,71 @@
+Sections:
+
+Tool to parallelize code that contains two or more different jobs, good example to a case we would use sections is the well known producer-consumer problem.
+
+Syntax:
+
+#pragma omp parallel sections
+{
+
+	#pragma omp section
+	{
+		// section 1...
+	}
+
+	#pragma omp section
+	{
+		// section 2...
+	}
+
+	.
+	.
+	.
+
+	#pragma omp section
+	{
+		// section n...
+	}
+
+}
+
+
+Nested sections syntax:
+
+#pragma omp parallel sections
+{
+
+	#pragma omp section
+	{
+	
+		#pragma omp parallel sections
+		{
+			#pragma omp section
+			{
+				// section 1...
+			}
+			#pragma omp section
+			{
+				// section 2...
+			}
+			#pragma omp section
+			{
+				// section 3...
+			}
+		}
+	
+	}
+
+}
+
+
+Note that by default the inner sections executed by the same father thread, if we would like to change it we need to add: "omp_set_nested(n)".
+
+
+
+
+
+
+
+
+Side note:
+#pragma omp flush --> forces the code in flush block to be updated in the RAM.

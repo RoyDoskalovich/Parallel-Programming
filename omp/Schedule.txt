@@ -1,0 +1,14 @@
+Schedule:
+
+# pragma omp parallel for schedule(type, num)
+for (...) {
+	//
+}
+
+type ∈ {static, dynamic}.
+num is the numbers of iterations each thread would receive in a row in each allocation.
+
+Static allocation would happen before run time, meaning it would be cheaper and more useful when we know in advance how much effort each iteration would take. 
+On the other end, dynamic allocation would come very handy when we would not know how many time each iteration would take, we can thing about dynamic allocation similar to 
+thread pool behavior, when thread is ready to work, he would be assigned to treat an iteration (first come, first serve). The obvious down side of dynamic scheduling is the resources
+it takes, nothing that good would come for free, some resources has to given to deal with the rum time scheduling. 

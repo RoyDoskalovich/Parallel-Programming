@@ -1,0 +1,24 @@
+Reduction:
+
+// Each thread would have local variable of that var and in the end of the loop they would be combined according to the operation passed to the reduction.
+#pragma omp parallel for reduction (op :var)
+for (...) {
+	//
+}
+
+Example:
+
+int main () {
+	
+	int sum = 0;
+	#pragama omp parallel for reduction (+ : sum)
+	for (int i = 0; i < 10; i++) {
+		sum += i;
+		printf("thread%d sum %d", omp_get_thread_num(), sum);
+	}
+	printf("sum = %d\n", sum)
+	return 0;
+}
+
+// The final printf would print the total sum which is 45.
+// The inner printfs would print the each thread private sums, according to the iterations each thread has been given.

@@ -1,0 +1,31 @@
+For loops:
+
+#pragma omp parallel for
+for (...) {
+	//
+}
+
+// Paralleling only the outer loop.
+#pragma omp parallel for
+for (...) {
+	//
+	for (...) {
+		//
+	}
+}
+
+
+// Paralleling both of the loops.
+#pragma omp parallel for collapse(2)
+for (...) {
+	//
+	for (...) {
+		//
+	}
+}
+
+// Canceling the inexplicit barrier.
+#pragma omp parallel for nowait
+for (...) {
+	//
+}

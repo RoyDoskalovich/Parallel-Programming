@@ -1,0 +1,149 @@
+Synchronization:
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Ordered: Code that is written in ordered block is promised to be executed according to the order it was written in the block. yet parallelly.
+
+example:
+
+doSomeWork(i) {
+	printf("work %d in progress...\n", i);
+}
+
+main() {
+	
+	#pragma omp parallel
+	{
+		#pragma omp for ordered
+		for i = 0 to 4:
+			result = doSomeWork(i);
+			# pragma omp ordered
+				printf("work %d: %d\n", result);
+	}
+}
+
+The output would look that for example:
+
+work 2 in progress...
+work 1 in progress...
+work 0 in progress...
+work 3 in progress...
+work 0: 0
+work 1: 1
+work 2: 2
+work 3: 3
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Critical: critical block lets only one thread to enter the block. We can name critical blocks, and every critical block with the same name would be locked while thread enters one of
+the critical blocks with the same name, if we don't give it any name it is the default name..
+
+Example: when a thread enters the first critical section, the second is being locked as well, 'cause they share the same default name.
+#pragma omp parallel for
+for i = 0 to N
+	#pragma omp critical
+		x <-- temp 
+
+#pragma omp parallel for
+for i = 0 to N
+	#pragma omp critical
+		y <-- temp
+
+Example: now we would name each critical section differently, and they would not lock each other.
+#pragma omp parallel for
+for i = 0 to N
+	#pragma omp critical (cf)
+		x <-- temp 
+
+#pragma omp parallel for
+for i = 0 to N
+	#pragma omp critical (cg)
+		y <-- temp
+
+## We would avoid the use of critical as long as we can, it is way too powerful tool that damages the performance a lot!!
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Locks: We can lock every resource on our code, think about it as a room that holds some valuable resource that when someone enters the room in order to use it,
+he locks the door after him, and when he is done, he unlocks the door, so that others can use the resource after him...
+
+We have set of functions we can use in OpenMP in order to use locks:
+
+void omp_set_lock(omp_lock_t *lock);
+
+int omp_test_lock(omp_lock_t *lock);
+
+void omp_init_lock(omp_lock_t *lock);
+
+void omp_unset_lock(omp_lock_t *lock);
+
+void omp_destory_lock(omp_lock_t *lock);
+
+Example: Sorted insert to a sorted linked list:
+
+void sortedInsert(node_t *head, int val) {
+	
+	node_t *ptr = head->next;
+	node_t *prev = head;
+	
+	while (ptr != NULL && ptr->value < val) {
+		prev = ptr;
+		ptr = ptr->next;
+	}
+	omp_set_lock(prev->lock);
+
+	if (prev->next != ptr) {
+		ptr = prev->next;
+		while (ptr != NULL && ptr->value < val) {
+			omp_set_lock(ptr->lock):
+			omp_unset_lock(prev->lock);
+			prev = ptr;
+			ptr -> ptr-next;
+		}
+	}
+	node_t *newNode = malloc(sizeof(node_t));
+	newNode->value = val;
+	newNode->next = ptr;
+	newNode->lock = malloc(sizeof(omp_lock_t));
+	omp_init_lock(newNode->lock);
+	prev->next = newNode;
+	omp_unset_lock(prev->lock);
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Atomic: an hardware solution for the mutual exclusion problem, that lets only one thread do a desired action from beginning to end without letting any other thread
+interrupting it, the benefit of using atomic action comparing to the use of locks is that there is not overhead for freezing other threads and saving their status till the time
+they should run again, but on the other hand, atomic actions causes busy wait for the other stopped threads, which means unused time of the CPU...
+
+Syntax: #pragma omp atomic [read | write | update | capture]
+the default behavior is update (= atomic protects updates to a storage location).
+
+#pragma omp atomic compare		// Atomic Compare & Swap action.
+	x = x op expr ? expr1 : expr2:
+
+#pragma omp atomic capture		// Hold the old value without letting in being destroyed.
+	oldValue = x
+	x = new value
+
+#pragma omp atomic compare capture
+	currentValue = x
+	x = x == oldValue ? newValue : x
+
+
+When read is important atomic action? When the data is not aligned and some data we want to read is kept in two different sections, meaning that there is a need of two reads
+from the memory in order to read the data, and between those reads it is possible that other thread would modify part of the data that we have not read yet.
+
+Example:
+
+parallelDFSVisit(v):
+	visited[v] <-- BLACK;
+	
+	for u ∈ neighbors[v]:
+		#pragma atomic compare capture
+			oldValue <-- visited[u];
+			visited[u] <-- visited[u] = WHITE ? GREY : visited[u]
+		if oldValue = WHITE:
+			#pragma omp task
+				parallelDFSVisit[u];
+ 
+
