@@ -1,0 +1,33 @@
+parallelKahnCircleDetection(V, E);
+	
+	set Q <-- emptyGroup;
+	
+	for each v ∈ V such that degreeIn(v) is 0:		# Let processor pi work on vertex vi.
+		Q <-- Q Union {v};
+		
+	while Q != emptyGroup:
+		{v1, v2, ..., vp} <-- Q.dequeue();		# Let processor pi work on vertex vi.
+		remove vi from V;
+		remove all vi's edges from E;
+		if (degreeIn of neighbor u of vi becomes 0);
+			Q <-- Q Union {u};
+	
+	if (G is not empty);
+		return "Circle exist";
+	return "No circle mate!"
+
+
+paralleKahnlTopoSort(V, E):
+	
+	rating <-- 0;
+	Q <-- V;
+	
+	while (Q != emptyGroup):
+		for each v ∈ V such that degreeIn(v) is 0:		# Let processor pi work on vertex vi.
+			v.rating <-- rating;
+			remove v from C and remove all v's edges from E;
+		barrier
+		rating <-- rating + 1;
+
+	convert V to a topological sorted array according to the vertices rating;	// Vertices with lower ratings would come before vertices with higher ratings, and the order between vertices with the same 
+																// rating does not matter. # Do it parallelly with |V| processors.

@@ -1,0 +1,15 @@
+parallelMISLuby(V, E):
+	
+	init set I <-- emptyGroup;
+	C <-- V;
+	
+	while (C != emptyGroup):
+		parallelly with |C| processors, one for each vertex assign unique random number to each v ∈ C;
+		parallelly with processor for each vertex v that his random number is samller then all of his neighbors numbers:
+			add v to I;
+			remove v and all of his neighbors from C;
+	return I;
+	
+# The first parallel line can happen in O(1), and the next parallel part can be executed parallelly if we will hold C as shared memory, in a way that each processor could check with atomic action
+# that his attached vertex has been removed from C in any moment, and if so the processor would end his job and would not waist time assets. 
+		

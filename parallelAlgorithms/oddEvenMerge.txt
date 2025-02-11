@@ -1,0 +1,58 @@
+oddEvenMerge(A[], B[]) {
+	
+	oddA, evenA, oddB, evenB = createOddEvenArrays(A, B); // oddA would contain all of the odd indexed elements of A, evenA would contain all of the even indexed elements of A...
+	C = oddEvenMerge(oddA, oddB);
+	D = oddEvenMerge(evenA, evenB);
+	E = merge(C, D); // E <-- [C[0]. D[0], C[1], D[1], C[2], D[2], ...].
+	E' = finalTouchUps(E); // E' <-- [E[0], min(E[1], E[2], max(E[1], E[2], min(E[3], E[4], max(E[3], E[4], ..., min(E[N - 1], E[N], max(E[N - 1], E[N]].
+}
+
+
+First, forth and fifth rows would happen in O(1) time with n processors.
+Second and third rows would take T(n/2) time (they would happen in parallel obviously).
+Therefor, the time complexity would be: T(n) = T(n/2) + O(1) = O(log(n)).
+
+
+How would we use this oddEvenMergre algorithm to sort an array?
+
+
+oddEvenMergeSort(arr[], start, length){
+	if (length > 1) {
+		k = length / 2;
+		A = oddEvenMergeSort(arr, start, k);
+		B = oddEvenMergeSort(arr, start + k, k);
+
+		oddEvenMerge(A, B);
+	}	
+}
+
+Run example [10, 4, 61, 3, 1, 41, 6, 5]:
+		
+	# Splitting step:
+	split [10, 4, 61, 3, 1, 41, 6, 5] to [10, 4, 61, 3] and [1, 41, 6, 5].
+
+		split [10, 4, 61, 3] to [10, 4] and [61, 3].
+		split [1, 41, 6, 5] to [1, 41] and [6, 5].
+
+			split [10, 4] to [10] and [4].
+			split [61, 3] to [61] and [3].
+			split [1, 41] to [1] and [41].
+			split [6, 5] to [6] and [5].
+
+	
+	# Merging step:
+	merge [10] and [4] into [4, 10].
+	merge [61] and [3] into [3, 61].
+	merge [1] and [41] into [1, 41].
+	merge [6] and [5] into [5, 6].
+
+		merge [4, 10] and [3, 61] into [3, 4, 10, 61].
+		merge [1, 41] and [5, 6] into [1, 5, 6, 41].
+
+			
+			merge [3, 4, 10, 61] and [1, 5, 6, 41] into [1, 3, 4, 5 ,6, 10, 41, 61].
+
+ And we are done, the array is completely sorted!!!
+
+		
+		

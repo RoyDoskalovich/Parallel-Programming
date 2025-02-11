@@ -1,0 +1,61 @@
+parallelBFS(V, E, s):
+	
+	for each v ∈ V:		# Let processor pi work no vertex vi.
+		colorV <-- white;
+		dV <-- infinity;
+		paiV <-- emptyGroup;
+	
+	colorS <-- grey;
+	dS <-- 0;
+	level <-- 0;
+	define queue fLevel <-- {s};
+
+	while fLevel != emptyGroup:
+		fLevel+1 <-- emptyGroup;
+		{v1, v2, ..., vp} <-- fLevel.dequeue();
+		for each v ∈ {v1, v2, ..., vp}:	# Let processor pi work on vertex vi.
+			colorVi <-- black;
+			for each u neighbor of v:
+				if (colorU is white):
+					fLevel+1.enqueue(u);
+					colorU <-- grey;
+					paiU <-- v;
+		level <-- level+1;
+
+# Note that we do have to take care of synchronization of the fLevel queues, we can do it by using critical section or other tools, or by using local versions of queue for each thread and then combing them, or just using them separately. 
+
+
+# OpenMP version:
+
+
+Global variables:
+
+	counter <-- 1;
+	depth <-- 0;
+	parents[|V|];
+
+parallelBottomUpBFS(V, E, s):
+	
+	#pragme omp parallel for
+		parents <-- [-1, -1, ..., -1];
+	
+	parents[s] <-- depth;
+
+	while (counter != 0):
+		parallelBottomUpStep();
+		depth++;
+
+parallelBottomUpStep():
+	
+	counter <-- 0;
+	
+	#pragma omp parallel for schedule(dynamic, 1)
+	for v ∈ V:
+		if (parents[v] = -1):
+			#pragma omp parallel for
+			for u ∈ neighbors[v]:
+				if (parents[u] = depth):
+					parents[v] <-- depth + 1;
+					counter <-- 1;
+					break;
+

@@ -1,0 +1,16 @@
+parallelDFS(V, E, s):
+	
+	// Init stage:
+	for each v ∈ V:		# Let processor pi work on vertex vi.
+		colorV <-- white;
+		paiV <-- emptyGroup;
+	colorS <-- grey;
+	parallelDFSVisit(V, E, s);
+
+parallelDFSVisit(V, E, v):
+	
+	for each ui white neighbor of v:	# Let processor pi work on vertex ui.
+		paiUi <-- v;
+		colorUi <-- grey;
+		parallelDFSVisit(V, E, ui);
+	

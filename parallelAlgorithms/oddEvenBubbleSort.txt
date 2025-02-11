@@ -1,0 +1,40 @@
+oddEvenBubbleSort(int arr[]){
+
+	rank = process_id();
+	A = initial_value(rank);
+	
+	for (int i = 0; i < N; i++) {
+
+		// Even phase.
+		if (i % 2 == 0) {
+
+			// Even processor.
+			if (rank  % 2 == 0) {
+				recv(&B, rank + 1);
+				send(A, rank + 1);
+				A = min(A, B);
+			}
+			// Odd processor.
+			else {
+				recv(&B, rank - 1);
+				send(A, rank - 1);
+				A = max(A, B);
+			}	
+		} else if (i > 1 && i < N -1) { // Odd phase.
+			
+			// Even processor.
+			if (rank  % 2 == 0) {
+				recv(&B, rank - 1);
+				send(A, rank - 1);
+				A = max(A, B);
+			}
+			// Odd processor.
+			else {
+				recv(&B, rank + 1);
+				send(A, rank + 1);
+				A = min(A, B);
+			}
+		}
+		setFinalValue(A, rank);
+	}	
+}

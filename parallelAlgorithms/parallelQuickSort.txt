@@ -1,0 +1,54 @@
+parallelQuickSort(arr[], pivot, length) { // Usually pivot would be initialize to 1.
+	
+	if (pivot < length) {
+		q <-- parallelPartition(arr, pivot, length); // q is the index of the pivot after the process of partition.
+		
+		# Run the next to lines of code in parallel:
+		parallelQuickSort(arr, pivot, q - 1);
+		parallelQuickSort(arr, q + 1, length);
+	}
+}
+
+parallelPartition(arr[], pivotIndex, length) {
+
+	larger = [0, 0, ..., 0];
+	smaller = [0, 0, ..., 0];
+	output = [0, 0, ..., 0];
+
+	parallel for (i = 0; i < length; i++) {
+		if (arr[i] > arr[pivotIndex])
+			larger[i] = 1;
+		else
+			smaller[i] = 1;
+	}
+
+	largerPrefixSum = parallelPrefixSum(larger, n);
+	smallerPrefixSum = parallelPrefixSum(smaller, n);
+
+	sortedPivotIndex = smaller[n];
+	output[sortedPivotIndex] = arr[pivotIndex];
+
+	parallel for (i = 0; i < length; i++) {
+		if (larger[i] == 1) 
+			output[sortedPivotIndex + largerPrefixSum[i]] = arr[i];
+		else
+			output[smallerPrefixSum[i] - 1] = arr[i];
+	}
+	
+	return output;
+}
+
+parallelPrefixSum(arr[]) {
+
+	output = arr;
+
+	for (j = 0; j < log(n);  j++) {
+		# All iterations of the inner loop are executed in parallel with n - 1 processors:
+		for (i = 2^j; i < n; i++){
+			if (i >= 2^j)
+				output[i] = output[i] + output[i - 2^j];
+		} 
+	}
+
+	return output;
+}
