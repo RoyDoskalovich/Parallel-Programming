@@ -1,7 +1,3 @@
-# Tal Achizvi 313555088
-# Roy Doskalovich 319088548
-
-
 .intel_syntax noprefix
 .section .data
 
