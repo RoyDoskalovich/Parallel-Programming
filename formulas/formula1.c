@@ -1,6 +1,3 @@
-// Tal Achizvi 313555088
-// Roy Doskalovich 319088548
-
 #include <immintrin.h>
 #include <math.h>
 
