@@ -1,6 +1,3 @@
-// Roy Doskalovich 319088548
-// Tal Achizvi 313555088
-
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
