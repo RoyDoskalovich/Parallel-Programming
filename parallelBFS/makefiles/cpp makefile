@@ -1,5 +1,5 @@
 # Target executable name
-TARGET = part_III.out
+TARGET = parallelBFS.out
 
 # Source files
 SRCS = main.c code.cpp
