@@ -10,13 +10,13 @@ Optimized implementations of mathematical formulas using **SIMD intrinsics** and
 ### [Strings](./strings)
 Efficient implementations of **Base64 Distance** and **Hamming Distance** using **SIMD and Assembly** to speed up string processing.
 
-### [Parallel Linked List](./linked_list)
+### [Parallel Linked List](https://github.com/RoyDoskalovich/Parallel-Programming/tree/master/linked%20list)
 A **thread-safe linked list** implementation using **OpenMP locks**, allowing concurrent insertions, deletions, and searches.
 
 ### [Parallel Algorithms](./parallelAlgorithms)
 Pseudocode implementations of various **parallel algorithms**, including **Bitonic Merge, Odd-Even Merge, and Parallel DFS**.
 
-### [omp](./omp)
+### [OpenMP](./omp)
 A collection of **notes and insights** on writing efficient parallel programs using **OpenMP**.
 
 ### [Parallel BFS](./parallelBFS)
