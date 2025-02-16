@@ -13,7 +13,7 @@ Efficient implementations of **Base64 Distance** and **Hamming Distance** using 
 ### [Parallel Linked List](./linkedlist/README.md)
 A **thread-safe linked list** implementation using **OpenMP locks**, allowing concurrent insertions, deletions, and searches.
 
-### [Parallel Algorithms](./parallel_algorithms/README.md)
+### [Parallel Algorithms](./parallelAlgorithms/README.md)
 Pseudocode implementations of various **parallel algorithms**, including **Bitonic Merge, Odd-Even Merge, and Parallel DFS**.
 
 ### [omp](./omp/README.md)
